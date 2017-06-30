@@ -18,7 +18,11 @@ RUN             apt-get update && \
                 apt-get install -y \
                     apache2 \
                     php7.1-cli \
-                    php7.1-fpm &&\
+                    php7.1-fpm \
+                    php7.1-curl \
+                    php7.1-mbstring \
+                    php7.1-xml \
+                    php7.1-zip && \
                 a2enmod proxy_fcgi setenvif && \
                 a2enconf php7.1-fpm
 

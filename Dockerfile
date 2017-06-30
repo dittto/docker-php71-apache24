@@ -23,12 +23,26 @@ RUN             apt-get update && \
                     php7.1-mbstring \
                     php7.1-xml \
                     php7.1-zip && \
-                a2enmod proxy_fcgi setenvif && \
+                a2enmod \
+                    proxy_fcgi \
+                    setenvif \
+                    rewrite \
+                    headers && \
                 a2enconf php7.1-fpm
 
 # Override PHP setup
 RUN             sed -i "s/;date.timezone =.*/date.timezone = UTC/g" /etc/php/7.1/fpm/php.ini && \
                 sed -i "s/;date.timezone =.*/date.timezone = UTC/g" /etc/php/7.1/cli/php.ini
+
+# Setup Supervisord to keep both PHP and Apache daemons running
+RUN             apt-get update && \
+                apt-get install -y supervisor && \
+                mkdir -p /var/www/web
+COPY            etc/supervisord/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
+# Clean apt-get
+RUN             apt-get clean && \
+                rm -rf /var/lib/apt/lists/*
 
 # Override Apache setup (pushes access and errors to stdout/err for pid=1, which should be the Supervisord, run by CMD)
 COPY            etc/vhost/default.conf /etc/apache2/sites-enabled/000-default.conf
@@ -39,20 +53,9 @@ RUN             sed -i "s/Timeout 300/Timeout 30/g" /etc/apache2/apache2.conf &&
                 ln -sf /var/docker_stdout /var/log/apache2/access.log && \
                 ln -sf /var/docker_stdout /var/log/apache2/other_vhosts_access.log
 
-# Setup Supervisord to keep both PHP and Apache daemons running
-RUN             apt-get update && \
-                apt-get install -y supervisor && \
-                mkdir -p /var/www/web
-COPY            etc/supervisord/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-
-
 # Start services for Supervisord to look after
 RUN             service php7.1-fpm start && \
                 service apache2 start
-
-# Clean apt-get
-RUN             apt-get clean && \
-                rm -rf /var/lib/apt/lists/*
 
 # Install Composer
 RUN             php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" && \

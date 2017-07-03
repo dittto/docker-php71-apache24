@@ -1,0 +1,40 @@
+parameters:
+    #parameter_name: value
+
+services:
+    app_bundle.controller.default:
+        class: AppBundle\Controller\DefaultController
+        arguments: [ '@templating', '@http_client', '%kernel.project_dir%' ]
+
+    request_logger:
+        class: AppBundle\RequestLogger\Logger\RequestLogger
+
+    http_client:
+        class: GuzzleHttp\Client
+        arguments:
+          - handler: '@http_client.handlerstack'
+            connect_timeout: 5
+            timeout: 5
+
+    http_client.handlerstack:
+        class: GuzzleHttp\HandlerStack
+        factory: [ GuzzleHttp\HandlerStack, 'create' ]
+        calls:
+          - [ 'push', [ '@http_client.logger_middleware.request' ] ]
+
+    http_client.logger_middleware:
+        class: AppBundle\RequestLogger\GuzzleMiddleware\LoggerMiddleware
+        public: false
+        arguments: [ ]
+
+    http_client.logger_middleware.request:
+        class: Closure
+        public: false
+        factory: [ '@http_client.logger_middleware', 'onRequest' ]
+        arguments: [ '@request_logger' ]
+
+    debug_listener:
+        class: AppBundle\RequestLogger\Listener\JSONDebugListener
+        arguments: [ '@request_logger', '%kernel.debug%' ]
+        tags:
+            - { name: kernel.event_listener, event: kernel.response, method: 'onKernelResponse' }

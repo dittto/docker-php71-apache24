@@ -9,6 +9,10 @@ services:
     request_logger:
         class: AppBundle\RequestLogger\Logger\RequestLogger
 
+    request_logger_passthrough:
+        class: AppBundle\RequestLogger\Logger\RequestLoggerPassthroughDecorator
+        arguments: [ '@request_logger', '@monolog.logger.external_request' ]
+
     http_client:
         class: GuzzleHttp\Client
         arguments:
@@ -31,7 +35,7 @@ services:
         class: Closure
         public: false
         factory: [ '@http_client.logger_middleware', 'onRequest' ]
-        arguments: [ '@request_logger' ]
+        arguments: [ '@request_logger_passthrough' ]
 
     debug_listener:
         class: AppBundle\RequestLogger\Listener\JSONDebugListener

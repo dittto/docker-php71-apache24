@@ -1,7 +1,9 @@
 <?php
 namespace AppBundle\RequestLogger\Logger;
 
-interface RetrievableLogsInterface
+use Psr\Log\LoggerInterface;
+
+interface RetrievableLogsInterface extends LoggerInterface
 {
     public function getLogs():array;
 }

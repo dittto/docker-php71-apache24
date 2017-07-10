@@ -2,6 +2,7 @@
 namespace AppBundle\Controller;
 
 use GuzzleHttp\ClientInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;

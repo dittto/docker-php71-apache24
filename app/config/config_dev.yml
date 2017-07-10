@@ -12,10 +12,12 @@ web_profiler:
     intercept_redirects: false
 
 monolog:
+    channels:
+        [ "external_request" ]
     handlers:
         main:
             type: stream
-            path: '%kernel.logs_dir%/%kernel.environment%.log'
+            path: "php://stderr"
             level: debug
             channels: ['!event']
         console:

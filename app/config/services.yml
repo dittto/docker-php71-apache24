@@ -6,12 +6,11 @@ services:
         class: AppBundle\Controller\DefaultController
         arguments: [ '@templating', '@http_client', '%kernel.project_dir%' ]
 
-    request_logger:
-        class: AppBundle\RequestLogger\Logger\RequestLogger
+    dittto.request_logger.alias:
+        alias: 'dittto.request_logger.passthrough'
 
-    request_logger_passthrough:
-        class: AppBundle\RequestLogger\Logger\RequestLoggerPassthroughDecorator
-        arguments: [ '@request_logger', '@monolog.logger.external_request' ]
+    dittto.request_logger.monolog_channel:
+        alias: 'monolog.logger.external_request'
 
     http_client:
         class: GuzzleHttp\Client
@@ -24,21 +23,10 @@ services:
         class: GuzzleHttp\HandlerStack
         factory: [ GuzzleHttp\HandlerStack, 'create' ]
         calls:
-          - [ 'push', [ '@http_client.logger_middleware.request' ] ]
+          - [ 'push', [ '@dittto.request_logger.middleware.request' ] ]
 
-    http_client.logger_middleware:
-        class: AppBundle\RequestLogger\GuzzleMiddleware\LoggerMiddleware
-        public: false
-        arguments: [ ]
-
-    http_client.logger_middleware.request:
-        class: Closure
-        public: false
-        factory: [ '@http_client.logger_middleware', 'onRequest' ]
-        arguments: [ '@request_logger_passthrough' ]
-
-    debug_listener:
-        class: AppBundle\RequestLogger\Listener\JSONDebugListener
-        arguments: [ '@request_logger', '%kernel.debug%' ]
+    dittto.request_logger.debug_listener:
+        class: Dittto\RequestLoggerBundle\Listener\JSONDebugListener
+        arguments: [ '@dittto.request_logger.alias', '%kernel.debug%' ]
         tags:
             - { name: kernel.event_listener, event: kernel.response, method: 'onKernelResponse' }

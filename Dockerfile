@@ -22,6 +22,7 @@ RUN             apt-get update && \
                     php7.1-curl \
                     php7.1-mbstring \
                     php7.1-xml \
+                    php7.1-xdebug \
                     php7.1-zip && \
                 a2enmod \
                     proxy_fcgi \

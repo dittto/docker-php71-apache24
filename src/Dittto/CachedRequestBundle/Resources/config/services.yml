@@ -1,4 +1,4 @@
 services:
-#    dittto_cached_request.example:
-#        class: Dittto\CachedRequestBundle\Example
-#        arguments: ["@service_id", "plain_value", "%parameter%"]
+    dittto.cached_request.middleware:
+        class: Dittto\CachedRequestBundle\GuzzleMiddleware\CachedMiddleware
+        arguments: [ ]

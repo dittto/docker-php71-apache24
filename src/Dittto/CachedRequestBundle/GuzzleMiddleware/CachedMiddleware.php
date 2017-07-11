@@ -22,7 +22,6 @@ class CachedMiddleware
                 $cacheKey = sha1((string) $request->getUri());
 
                 if ($cachedResponse = $cache->get($cacheKey)) {
-                    var_dump('is_cached');
                     return new FulfilledPromise($cachedResponse);
                 }
 
@@ -31,14 +30,12 @@ class CachedMiddleware
                 return $handler($request, $options)->then(
                     function (ResponseInterface $response) use ($request, $cache, $cacheKey, $cacheTime) {
 
-                        var_dump('caching');
                         $cache->set($cacheKey, $response, $cacheTime);
 
                         return $response;
                     },
                     function (TransferException $e) use ($request, $cache, $cacheKey, $cacheTime, $isCachedOnFailure) {
 
-                        var_dump('failed');
                         if ($isCachedOnFailure) {
                             $cache->set($cacheKey, $e, $cacheTime);
                         }

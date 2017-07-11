@@ -15,19 +15,15 @@ services:
     http_client:
         class: GuzzleHttp\Client
         arguments:
-          - handler: '@http_client.handlerstack'
-            connect_timeout: 5
-            timeout: 5
+            - handler: '@http_client.handlerstack'
+              connect_timeout: 5
+              timeout: 5
 
     http_client.handlerstack:
         class: GuzzleHttp\HandlerStack
         factory: [ GuzzleHttp\HandlerStack, 'create' ]
         calls:
-          - [ 'push', [ '@dittto.cached_request.middleware.request' ] ]
-
-    dittto.cached_request.middleware:
-        class: Dittto\CachedRequestBundle\GuzzleMiddleware\CachedMiddleware
-        arguments: [ ]
+            - [ 'push', [ '@dittto.cached_request.middleware.request' ] ]
 
     dittto.cached_request.middleware.request:
         class: Closure

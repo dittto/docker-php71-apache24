@@ -23,10 +23,24 @@ services:
         class: GuzzleHttp\HandlerStack
         factory: [ GuzzleHttp\HandlerStack, 'create' ]
         calls:
-          - [ 'push', [ '@dittto.request_logger.middleware.request' ] ]
+          - [ 'push', [ '@dittto.cached_request.middleware.request' ] ]
 
-    dittto.request_logger.debug_listener:
-        class: Dittto\RequestLoggerBundle\Listener\JSONDebugListener
-        arguments: [ '@dittto.request_logger.alias', '%kernel.debug%' ]
-        tags:
-            - { name: kernel.event_listener, event: kernel.response, method: 'onKernelResponse' }
+    dittto.cached_request.middleware:
+        class: Dittto\CachedRequestBundle\GuzzleMiddleware\CachedMiddleware
+        arguments: [ ]
+
+    dittto.cached_request.middleware.request:
+        class: Closure
+        factory: [ '@dittto.cached_request.middleware', 'onRequest' ]
+        arguments: [ '@cache_adapter' ]
+
+    redis_cache:
+        class: Predis\Client
+        arguments:
+          - scheme: 'tcp'
+            host:   'redis_box'
+            port:   6379
+
+    cache_adapter:
+        class: Symfony\Component\Cache\Simple\RedisCache
+        arguments: [ '@redis_cache' ]

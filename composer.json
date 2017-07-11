@@ -24,7 +24,8 @@
         "symfony/symfony": "3.3.*",
         "twig/twig": "^1.0||^2.0",
         "guzzlehttp/guzzle": "~6.0",
-        "dittto/symfony-request-logger": ">=1.0"
+        "dittto/symfony-request-logger": ">=1.0",
+        "predis/predis": ">=1.1"
     },
     "require-dev": {
         "sensio/generator-bundle": "^3.0",

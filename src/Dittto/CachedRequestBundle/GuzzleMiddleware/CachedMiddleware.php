@@ -1,6 +1,7 @@
 <?php
 namespace Dittto\CachedRequestBundle\GuzzleMiddleware;
 
+use Dittto\CachedRequestBundle\CacheKeyGenerator\CacheKeyInterface;
 use GuzzleHttp\Exception\TransferException;
 use GuzzleHttp\Promise\FulfilledPromise;
 use GuzzleHttp\Promise\RejectedPromise;
@@ -14,12 +15,12 @@ class CachedMiddleware
     public const CACHE_TIME_IN_S = 'cache_time';
     private const DEFAULT_CACHE_TIME = 5;
 
-    public function onRequest(CacheInterface $cache, int $defaultCacheTime = self::DEFAULT_CACHE_TIME, bool $isCachedOnFailure = false)
+    public function onRequest(CacheInterface $cache, CacheKeyInterface $keyGenerator, int $defaultCacheTime = self::DEFAULT_CACHE_TIME)
     {
-        return function (callable $handler) use ($cache, $defaultCacheTime, $isCachedOnFailure) {
-            return function (RequestInterface $request, array $options) use ($handler, $cache, $defaultCacheTime, $isCachedOnFailure) {
+        return function (callable $handler) use ($cache, $keyGenerator, $defaultCacheTime) {
+            return function (RequestInterface $request, array $options) use ($handler, $cache, $keyGenerator, $defaultCacheTime) {
 
-                $cacheKey = sha1((string) $request->getUri());
+                $cacheKey = $keyGenerator->getCacheKey($request, $options);
 
                 if ($cachedResponse = $cache->get($cacheKey)) {
                     return new FulfilledPromise($cachedResponse);
@@ -34,12 +35,7 @@ class CachedMiddleware
 
                         return $response;
                     },
-                    function (TransferException $e) use ($request, $cache, $cacheKey, $cacheTime, $isCachedOnFailure) {
-
-                        if ($isCachedOnFailure) {
-                            $cache->set($cacheKey, $e, $cacheTime);
-                        }
-
+                    function (TransferException $e) use ($request, $cache, $cacheKey, $cacheTime) {
                         return new RejectedPromise($e);
                     }
                 );

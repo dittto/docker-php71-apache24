@@ -18,11 +18,6 @@ class CachedMiddlewareTest extends \PHPUnit_Framework_TestCase
 
     }
 
-    public function testRequestedFailedIsStored()
-    {
-
-    }
-
     public function testCacheTimeIsOverridden()
     {
 

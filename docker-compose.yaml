@@ -1,17 +1,17 @@
 version: '2.0'
 services:
 
-    test_box:
+    test_docker:
         build:
             context: .
             dockerfile: Dockerfile
-        container_name: test_box
+        container_name: test_docker
         ports:
-            - "180:80"
+            - "190:80"
         networks:
             test_network:
                 aliases:
-                    - test_box
+                    - test_docker
         volumes:
             - .:/var/www
 

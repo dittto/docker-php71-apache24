@@ -28,7 +28,7 @@ services:
     dittto.cached_request.middleware.request:
         class: Closure
         factory: [ '@dittto.cached_request.middleware', 'onRequest' ]
-        arguments: [ '@cache_adapter' ]
+        arguments: [ '@logged_cache_adapter', '@dittto.cached_request.generator.sha1_uri', 5 ]
 
     redis_cache:
         class: Predis\Client
@@ -40,3 +40,9 @@ services:
     cache_adapter:
         class: Symfony\Component\Cache\Simple\RedisCache
         arguments: [ '@redis_cache' ]
+
+    logged_cache_adapter:
+        class: Dittto\CachedRequestBundle\Logger\LoggedCacheDecorator
+        arguments: [ '@cache_adapter' ]
+        calls:
+            - [ 'setLogger', [ '@monolog.logger.external_request' ] ]

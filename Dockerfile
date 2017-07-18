@@ -13,6 +13,9 @@ RUN             apt-get update && \
                 wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg && \
                 echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/php.list
 
+# Fix vim controls
+RUN             echo "set term=builtin_ansi" >> ~/.vimrc
+
 # Install PHP and Apache
 RUN             apt-get update && \
                 apt-get install -y \
@@ -28,6 +31,8 @@ RUN             apt-get update && \
                     setenvif \
                     rewrite \
                     headers && \
+                a2dismod -f \
+                    autoindex && \
                 a2enconf php7.1-fpm
 
 # Override PHP setup

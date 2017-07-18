@@ -28,7 +28,7 @@ services:
     dittto.cached_request.middleware.request:
         class: Closure
         factory: [ '@dittto.cached_request.middleware', 'onRequest' ]
-        arguments: [ '@logged_cache_adapter', '@dittto.cached_request.generator.sha1_uri', 5 ]
+        arguments: [ '@logged_cache_adapter', '@dittto.cached_request.generator.sha1_uri.logged', 5 ]
 
     redis_cache:
         class: Predis\Client
@@ -44,5 +44,10 @@ services:
     logged_cache_adapter:
         class: Dittto\CachedRequestBundle\Logger\LoggedCacheDecorator
         arguments: [ '@cache_adapter' ]
+        calls:
+            - [ 'setLogger', [ '@monolog.logger.external_request' ] ]
+
+    dittto.cached_request.generator.sha1_uri.logged:
+        parent: dittto.cached_request.generator.sha1_uri
         calls:
             - [ 'setLogger', [ '@monolog.logger.external_request' ] ]

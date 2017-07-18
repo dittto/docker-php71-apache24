@@ -27,10 +27,7 @@ class DefaultController
         $url = 'https://svcs.ebay.com/services/search/FindingService/v1?OPERATION-NAME=findItemsAdvanced&SERVICE-NAME=FindingService&SERVICE-VERSION=1.0.0&REST-PAYLOAD&GLOBAL-ID=EBAY-NLBE&SECURITY-APPNAME=trustedr-bff3-476c-bd74-168dff52ac0c&RESPONSE-DATA-FORMAT=JSON&paginationInput.pageNumber=1&affiliate.networkId=9&affiliate.trackingId=5337985180&keywords=Samsung+Galaxy+S8&sortOrder=BestMatch&paginationInput.entriesPerPage=1';
 
         try {
-            $this->client->request(
-                'GET',
-                $url,
-                [
+            $this->client->request('GET', $url, [
                     CachedMiddleware::CACHE_TIME_IN_S => 10
                 ]
             );

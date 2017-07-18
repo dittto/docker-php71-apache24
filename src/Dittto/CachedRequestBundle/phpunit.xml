@@ -8,7 +8,9 @@
 
     <filter>
         <whitelist>
+            <directory>CacheKeyGenerator</directory>
             <directory>GuzzleMiddleware</directory>
+            <directory>Logger</directory>
         </whitelist>
     </filter>
 </phpunit>

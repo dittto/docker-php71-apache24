@@ -4,9 +4,10 @@ FROM            debian:8
 RUN             apt-get update && \
                 apt-get upgrade -y && \
                 apt-get install -y \
-                    wget \
-                    vim \
+                    curl \
                     git \
+                    vim \
+                    wget \
                     apt-transport-https \
                     lsb-release \
                     ca-certificates && \
@@ -39,7 +40,8 @@ RUN             apt-get update && \
 RUN             sed -i "s/;date.timezone =.*/date.timezone = UTC/g" /etc/php/7.1/fpm/php.ini && \
                 sed -i "s/;date.timezone =.*/date.timezone = UTC/g" /etc/php/7.1/cli/php.ini && \
                 sed -i "s/error_log =.*/error_log = \\/var\\/docker_stderr/g" /etc/php/7.1/fpm/php-fpm.conf && \
-                sed -i "s/;catch_workers_output =.*/catch_workers_output = yes/g" /etc/php/7.1/fpm/pool.d/www.conf
+                sed -i "s/;catch_workers_output =.*/catch_workers_output = yes/g" /etc/php/7.1/fpm/pool.d/www.conf && \
+                sed -i "s|;*clear_env = no|clear_env = no|g" /etc/php/7.1/fpm/pool.d/www.conf
 
 # Setup Supervisord to keep both PHP and Apache daemons running
 RUN             apt-get update && \
@@ -53,7 +55,7 @@ RUN             apt-get clean && \
 
 # Override Apache setup (pushes access and errors to stdout/err for pid=1, which should be the Supervisord, run by CMD)
 COPY            etc/vhost/default.conf /etc/apache2/sites-enabled/000-default.conf
-RUN             sed -i "s/Timeout 300/Timeout 30/g" /etc/apache2/apache2.conf &&\
+RUN             sed -i "s/Timeout 300/Timeout 10/g" /etc/apache2/apache2.conf &&\
                 ln -sfT /proc/1/fd/1 /var/docker_stdout && \
                 ln -sfT /proc/1/fd/2 /var/docker_stderr && \
                 ln -sf /var/docker_stderr /var/log/apache2/error.log && \

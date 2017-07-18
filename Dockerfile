@@ -39,6 +39,7 @@ RUN             apt-get update && \
 
 # Override PHP setup
 RUN             sed -i "s/;date.timezone =.*/date.timezone = UTC/g" /etc/php/7.1/fpm/php.ini && \
+                sed -i "s/;date.timezone =.*/date.timezone = UTC/g" /etc/php/7.1/cli/php.ini && \
                 sed -i "s/error_log =.*/error_log = \\/var\\/docker_stderr/g" /etc/php/7.1/fpm/php-fpm.conf && \
                 sed -i "s/;catch_workers_output =.*/catch_workers_output = yes/g" /etc/php/7.1/fpm/pool.d/www.conf && \
                 sed -i "s|;*clear_env = no|clear_env = no|g" /etc/php/7.1/fpm/pool.d/www.conf
